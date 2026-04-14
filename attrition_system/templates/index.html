@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AttritionIQ — Employee Risk Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0b0d11;
+    --surface:   #13161d;
+    --card:      #1a1e28;
+    --border:    #252a37;
+    --accent:    #e8f04a;
+    --accent2:   #4af0b8;
+    --accent3:   #f04a7a;
+    --text:      #e8eaf2;
+    --muted:     #6b7494;
+    --high:      #f04a7a;
+    --med:       #f0a44a;
+    --low:       #4af0b8;
+    --radius:    12px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND GRID ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(232,240,74,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(232,240,74,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  /* ── LAYOUT ── */
+  .app { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+  /* ── HEADER ── */
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 40px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(11,13,17,0.9);
+    backdrop-filter: blur(12px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-icon {
+    width: 38px; height: 38px;
+    background: var(--accent); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .logo-text { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+  .logo-text span { color: var(--accent); }
+  .header-meta { display: flex; gap: 20px; align-items: center; }
+  .pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; padding: 5px 12px;
+    border: 1px solid var(--border);
+    border-radius: 20px; color: var(--muted);
+  }
+  .pill.live { border-color: var(--accent2); color: var(--accent2); }
+  .pill.live::before { content: '● '; }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 60px 40px 40px;
+    display: flex; gap: 32px; align-items: flex-start;
+  }
+  .hero-text { flex: 1; }
+  .hero-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+  .hero-title em { color: var(--accent); font-style: italic; }
+  .hero-sub { color: var(--muted); font-size: 15px; line-height: 1.6; max-width: 440px; }
+
+  /* ── STATS ROW ── */
+  .stats-row {
+    display: flex; gap: 16px;
+    padding: 0 40px 32px;
+    flex-wrap: wrap;
+  }
+  .stat-card {
+    flex: 1; min-width: 160px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px 24px;
+    transition: border-color 0.2s;
+  }
+  .stat-card:hover { border-color: var(--accent); }
+  .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 8px; }
+  .stat-value { font-size: 2rem; font-weight: 800; font-family: 'DM Mono', monospace; }
+  .stat-value.green  { color: var(--low); }
+  .stat-value.yellow { color: var(--accent); }
+  .stat-value.red    { color: var(--high); }
+  .stat-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* ── MAIN GRID ── */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    padding: 0 40px 40px;
+  }
+  @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+
+  /* ── PANEL ── */
+  .panel {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+  }
+  .panel-header {
+    padding: 18px 24px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .panel-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+  .panel-body { padding: 24px; }
+
+  /* ── FORM ── */
+  .form-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 14px; margin-bottom: 20px;
+  }
+  .field label {
+    display: block; font-size: 11px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px;
+  }
+  .field input, .field select {
+    width: 100%; padding: 10px 14px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text);
+    font-family: 'DM Mono', monospace; font-size: 13px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+  }
+  .field input:focus, .field select:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(232,240,74,0.08);
+  }
+  .field select option { background: var(--card); }
+
+  /* ── MODEL SELECTOR ── */
+  .model-selector {
+    display: flex; gap: 8px; margin-bottom: 20px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 4px;
+  }
+  .model-btn {
+    flex: 1; padding: 8px; border: none; cursor: pointer;
+    border-radius: 7px; font-family: 'Syne', sans-serif;
+    font-size: 12px; font-weight: 600;
+    background: transparent; color: var(--muted);
+    transition: all 0.2s;
+  }
+  .model-btn.active {
+    background: var(--accent); color: var(--bg);
+  }
+
+  /* ── PREDICT BTN ── */
+  .btn-predict {
+    width: 100%; padding: 14px;
+    background: var(--accent); color: var(--bg);
+    border: none; border-radius: 10px; cursor: pointer;
+    font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800;
+    letter-spacing: 0.5px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-predict:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(232,240,74,0.3);
+  }
+  .btn-predict:active { transform: translateY(0); }
+  .btn-predict:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* ── RESULT CARD ── */
+  .result-card {
+    border-radius: 10px; padding: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface); margin-top: 20px;
+    display: none;
+  }
+  .result-card.visible { display: block; animation: fadeSlide 0.3s ease; }
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .result-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+  .risk-badge {
+    padding: 6px 16px; border-radius: 20px;
+    font-size: 13px; font-weight: 700;
+  }
+  .risk-High   { background: rgba(240,74,122,0.15); color: var(--high); border: 1px solid var(--high); }
+  .risk-Medium { background: rgba(240,164,74,0.15); color: var(--med);  border: 1px solid var(--med);  }
+  .risk-Low    { background: rgba(74,240,184,0.15); color: var(--low);  border: 1px solid var(--low);  }
+
+  /* ── PROBABILITY BAR ── */
+  .prob-track {
+    height: 8px; background: var(--border); border-radius: 4px;
+    overflow: hidden; margin: 12px 0 6px;
+  }
+  .prob-fill {
+    height: 100%; border-radius: 4px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    transition: width 0.8s cubic-bezier(0.23,1,0.32,1);
+  }
+  .prob-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+
+  /* ── FEATURE CHART ── */
+  .feat-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .feat-name { font-size: 11px; width: 160px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .feat-bar-track { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .feat-bar-fill { height: 100%; border-radius: 3px; background: var(--accent); }
+  .feat-pct { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); width: 36px; text-align: right; }
+
+  /* ── MODEL METRICS ── */
+  .metric-table { width: 100%; border-collapse: collapse; }
+  .metric-table th, .metric-table td {
+    padding: 12px 14px; font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+  .metric-table th { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; }
+  .metric-table tr:last-child td { border-bottom: none; }
+  .model-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-weight: 700;
+  }
+  .model-tag .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .dot-rf  { background: var(--accent); }
+  .dot-svm { background: var(--accent2); }
+  .dot-ens { background: var(--high); }
+  .mono { font-family: 'DM Mono', monospace; }
+
+  /* ── BATCH SECTION ── */
+  .batch-zone {
+    border: 2px dashed var(--border); border-radius: 10px;
+    padding: 28px; text-align: center; cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    margin-bottom: 16px;
+  }
+  .batch-zone:hover { border-color: var(--accent); background: rgba(232,240,74,0.03); }
+  .batch-icon { font-size: 32px; margin-bottom: 10px; }
+  .batch-text { font-size: 13px; color: var(--muted); }
+  .batch-text strong { color: var(--text); }
+  #batch-file { display: none; }
+
+  /* ── LOADING SPINNER ── */
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(11,13,17,0.3);
+    border-top-color: var(--bg);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  footer {
+    margin-top: auto; padding: 24px 40px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  footer span { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🧠</div>
+      <div class="logo-text">Attrition<span>IQ</span></div>
+    </div>
+    <div class="header-meta">
+      <span class="pill live">Models Active</span>
+      <span class="pill">Random Forest + SVM</span>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-text">
+      <h1 class="hero-title">Predict <em>who leaves</em><br>before they do.</h1>
+      <p class="hero-sub">
+        ML-powered employee attrition intelligence using Random Forest ensemble
+        and Support Vector Machines — trained on behavioral and organizational HR signals.
+      </p>
+    </div>
+  </div>
+
+  <!-- STATS ROW -->
+  <div class="stats-row" id="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Dataset Size</div>
+      <div class="stat-value yellow" id="stat-dataset">—</div>
+      <div class="stat-sub">Training records</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Attrition Rate</div>
+      <div class="stat-value red" id="stat-attrition">—</div>
+      <div class="stat-sub">In training data</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Ensemble AUC-ROC</div>
+      <div class="stat-value green" id="stat-auc">—</div>
+      <div class="stat-sub">RF + SVM combined</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Ensemble Accuracy</div>
+      <div class="stat-value yellow" id="stat-acc">—</div>
+      <div class="stat-sub">Test set</div>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- PREDICTION PANEL -->
+    <div class="panel" style="grid-row: span 2;">
+      <div class="panel-header">
+        <span class="panel-title">🔍 Single Employee Prediction</span>
+      </div>
+      <div class="panel-body">
+
+        <!-- Model selector -->
+        <div class="model-selector">
+          <button class="model-btn" onclick="setModel('rf', this)">Random Forest</button>
+          <button class="model-btn" onclick="setModel('svm', this)">SVM</button>
+          <button class="model-btn active" onclick="setModel('ensemble', this)">Ensemble ✦</button>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Age</label>
+            <input type="number" id="Age" value="32" min="18" max="65">
+          </div>
+          <div class="field">
+            <label>Monthly Income ($)</label>
+            <input type="number" id="MonthlyIncome" value="5000">
+          </div>
+          <div class="field">
+            <label>Department</label>
+            <select id="Department">
+              <option>Sales</option>
+              <option selected>Research & Development</option>
+              <option>Human Resources</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Job Role</label>
+            <select id="JobRole">
+              <option>Sales Executive</option>
+              <option selected>Research Scientist</option>
+              <option>Laboratory Technician</option>
+              <option>Manufacturing Director</option>
+              <option>Manager</option>
+              <option>Sales Representative</option>
+              <option>Human Resources</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>OverTime</label>
+            <select id="OverTime">
+              <option>No</option>
+              <option>Yes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Business Travel</label>
+            <select id="BusinessTravel">
+              <option>Non-Travel</option>
+              <option selected>Travel_Rarely</option>
+              <option>Travel_Frequently</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Job Satisfaction (1–4)</label>
+            <input type="number" id="JobSatisfaction" value="3" min="1" max="4">
+          </div>
+          <div class="field">
+            <label>Work-Life Balance (1–4)</label>
+            <input type="number" id="WorkLifeBalance" value="3" min="1" max="4">
+          </div>
+          <div class="field">
+            <label>Years At Company</label>
+            <input type="number" id="YearsAtCompany" value="5" min="0">
+          </div>
+          <div class="field">
+            <label>Total Working Years</label>
+            <input type="number" id="TotalWorkingYears" value="8" min="0">
+          </div>
+          <div class="field">
+            <label>Distance From Home</label>
+            <input type="number" id="DistanceFromHome" value="5" min="1" max="30">
+          </div>
+          <div class="field">
+            <label>Marital Status</label>
+            <select id="MaritalStatus">
+              <option>Single</option>
+              <option selected>Married</option>
+              <option>Divorced</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn-predict" id="predict-btn" onclick="runPrediction()">
+          <div class="spinner" id="spinner"></div>
+          <span id="btn-text">⚡ Predict Attrition Risk</span>
+        </button>
+
+        <!-- Result -->
+        <div class="result-card" id="result-card">
+          <div class="result-header">
+            <span class="result-label">Prediction Result</span>
+            <span class="risk-badge" id="risk-badge">—</span>
+          </div>
+          <div class="prob-track">
+            <div class="prob-fill" id="prob-fill" style="width:0%"></div>
+          </div>
+          <div class="prob-labels">
+            <span>Stays</span>
+            <span id="prob-text">—% Attrition Probability</span>
+            <span>Leaves</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- FEATURE IMPORTANCE PANEL -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">📊 Feature Importance</span>
+        <span class="pill">Random Forest</span>
+      </div>
+      <div class="panel-body" id="feat-panel">
+        <div style="color:var(--muted); font-size:13px;">Loading...</div>
+      </div>
+    </div>
+
+    <!-- MODEL METRICS PANEL -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">🏆 Model Metrics</span>
+        <span class="pill">Test Set</span>
+      </div>
+      <div class="panel-body">
+        <table class="metric-table" id="metrics-table">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Accuracy</th>
+              <th>AUC-ROC</th>
+            </tr>
+          </thead>
+          <tbody id="metrics-body">
+            <tr><td colspan="3" style="color:var(--muted)">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- BATCH PANEL -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">📂 Batch Prediction</span>
+        <span class="pill">CSV Upload</span>
+      </div>
+      <div class="panel-body">
+        <div class="batch-zone" onclick="document.getElementById('batch-file').click()">
+          <div class="batch-icon">📁</div>
+          <div class="batch-text"><strong>Drop CSV here</strong> or click to upload<br>
+            <small>Each row = one employee record</small>
+          </div>
+        </div>
+        <input type="file" id="batch-file" accept=".csv" onchange="runBatch(this)">
+        <div class="model-selector">
+          <button class="model-btn" onclick="setBatchModel('rf', this)">Random Forest</button>
+          <button class="model-btn" onclick="setBatchModel('svm', this)">SVM</button>
+          <button class="model-btn active" onclick="setBatchModel('ensemble', this)">Ensemble ✦</button>
+        </div>
+        <div id="batch-status" style="font-size:13px; color:var(--muted); text-align:center;"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <span>AttritionIQ · Random Forest + SVM · Flask API · Python</span>
+    <span>localhost:5000</span>
+  </footer>
+
+</div>
+
+<script>
+let selectedModel = 'ensemble';
+let batchModel    = 'ensemble';
+
+function setModel(m, el) {
+  selectedModel = m;
+  document.querySelectorAll('.model-selector:first-of-type .model-btn')
+    .forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+function setBatchModel(m, el) {
+  batchModel = m;
+  el.closest('.model-selector').querySelectorAll('.model-btn')
+    .forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── Load Metrics ──
+async function loadMetrics() {
+  const res  = await fetch('/model_metrics');
+  const data = await res.json();
+  const tbody = document.getElementById('metrics-body');
+
+  const models = [
+    { key:'random_forest', label:'Random Forest', dot:'rf'  },
+    { key:'svm',           label:'SVM (RBF)',     dot:'svm' },
+    { key:'ensemble',      label:'RF + SVM Ensemble', dot:'ens' }
+  ];
+  tbody.innerHTML = models.map(m => {
+    const d = data[m.key] || {};
+    return `<tr>
+      <td><span class="model-tag"><span class="dot dot-${m.dot}"></span>${m.label}</span></td>
+      <td class="mono">${d.accuracy ? (d.accuracy*100).toFixed(2)+'%' : '—'}</td>
+      <td class="mono">${d.auc_roc  ? d.auc_roc.toFixed(4) : '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Load Feature Importance ──
+async function loadFeatures() {
+  const res  = await fetch('/feature_importance');
+  const data = await res.json();
+  const max  = data[0]?.importance || 1;
+  document.getElementById('feat-panel').innerHTML = data.map(f => `
+    <div class="feat-row">
+      <div class="feat-name" title="${f.feature}">${f.feature}</div>
+      <div class="feat-bar-track">
+        <div class="feat-bar-fill" style="width:${(f.importance/max*100).toFixed(1)}%"></div>
+      </div>
+      <div class="feat-pct">${(f.importance*100).toFixed(1)}%</div>
+    </div>`).join('');
+}
+
+// ── Load Stats ──
+async function loadStats() {
+  const res  = await fetch('/model_metrics');
+  const metrics = await res.json();
+  const feat = await fetch('/feature_importance');
+
+  // We'll get meta from the page
+  const ens = metrics.ensemble || {};
+  document.getElementById('stat-auc').textContent  = ens.auc_roc ? ens.auc_roc.toFixed(4) : '—';
+  document.getElementById('stat-acc').textContent  = ens.accuracy ? (ens.accuracy*100).toFixed(1)+'%' : '—';
+}
+
+// ── Run Prediction ──
+async function runPrediction() {
+  const btn     = document.getElementById('predict-btn');
+  const spinner = document.getElementById('spinner');
+  const btnText = document.getElementById('btn-text');
+
+  btn.disabled   = true;
+  spinner.style.display = 'block';
+  btnText.textContent   = 'Predicting...';
+
+  const fields = ['Age','MonthlyIncome','Department','JobRole','OverTime',
+    'BusinessTravel','JobSatisfaction','WorkLifeBalance','YearsAtCompany',
+    'TotalWorkingYears','DistanceFromHome','MaritalStatus'];
+
+  const payload = { model_choice: selectedModel };
+  fields.forEach(f => {
+    const el = document.getElementById(f);
+    payload[f] = isNaN(el.value) ? el.value : (el.value === '' ? 0 : +el.value);
+  });
+
+  try {
+    const res  = await fetch('/predict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+
+    const card  = document.getElementById('result-card');
+    const badge = document.getElementById('risk-badge');
+    const fill  = document.getElementById('prob-fill');
+    const prob  = document.getElementById('prob-text');
+
+    card.classList.add('visible');
+    badge.textContent  = `${data.risk_level} Risk`;
+    badge.className    = `risk-badge risk-${data.risk_level}`;
+    fill.style.width   = `${data.attrition_prob}%`;
+    prob.textContent   = `${data.attrition_prob}% Attrition Probability`;
+
+  } catch(e) {
+    alert('Error: ' + e.message);
+  }
+
+  btn.disabled   = false;
+  spinner.style.display = 'none';
+  btnText.textContent   = '⚡ Predict Attrition Risk';
+}
+
+// ── Batch Prediction ──
+async function runBatch(input) {
+  const file   = input.files[0];
+  if (!file) return;
+  const status = document.getElementById('batch-status');
+  status.textContent = '⏳ Processing...';
+
+  const form = new FormData();
+  form.append('file', file);
+  form.append('model_choice', batchModel);
+
+  try {
+    const res = await fetch('/batch_predict', { method: 'POST', body: form });
+    const blob = await res.blob();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = 'attrition_predictions.csv'; a.click();
+    status.textContent = '✅ Download ready!';
+  } catch(e) {
+    status.textContent = '❌ Error: ' + e.message;
+  }
+}
+
+// ── Init ──
+async function init() {
+  await Promise.all([loadMetrics(), loadFeatures()]);
+
+  // Populate stats from meta in template
+  const dataset = "{{ meta.dataset_size | default('—') }}";
+  const attrRate = "{{ meta.attrition_rate | default('—') }}";
+  document.getElementById('stat-dataset').textContent  = dataset + (dataset !== '—' ? '' : '');
+  document.getElementById('stat-attrition').textContent = attrRate + (attrRate !== '—' ? '%' : '');
+
+  await loadStats();
+}
+
+init();
+</script>
+</body>
+</html>

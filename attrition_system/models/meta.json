@@ -1,0 +1,101 @@
+{
+  "feature_names": [
+    "Age",
+    "BusinessTravel",
+    "DailyRate",
+    "Department",
+    "DistanceFromHome",
+    "Education",
+    "EducationField",
+    "EnvironmentSatisfaction",
+    "Gender",
+    "HourlyRate",
+    "JobInvolvement",
+    "JobLevel",
+    "JobRole",
+    "JobSatisfaction",
+    "MaritalStatus",
+    "MonthlyIncome",
+    "MonthlyRate",
+    "NumCompaniesWorked",
+    "OverTime",
+    "PercentSalaryHike",
+    "PerformanceRating",
+    "RelationshipSatisfaction",
+    "StockOptionLevel",
+    "TotalWorkingYears",
+    "TrainingTimesLastYear",
+    "WorkLifeBalance",
+    "YearsAtCompany",
+    "YearsInCurrentRole",
+    "YearsSinceLastPromotion",
+    "YearsWithCurrManager"
+  ],
+  "categorical_cols": [
+    "BusinessTravel",
+    "Department",
+    "EducationField",
+    "Gender",
+    "JobRole",
+    "MaritalStatus",
+    "OverTime"
+  ],
+  "metrics": {
+    "random_forest": {
+      "accuracy": 0.8367,
+      "auc_roc": 0.667
+    },
+    "svm": {
+      "accuracy": 0.77,
+      "auc_roc": 0.594
+    },
+    "ensemble": {
+      "accuracy": 0.8367,
+      "auc_roc": 0.6674
+    }
+  },
+  "top_features": [
+    {
+      "feature": "MonthlyIncome",
+      "importance": 0.0641
+    },
+    {
+      "feature": "OverTime",
+      "importance": 0.0607
+    },
+    {
+      "feature": "YearsAtCompany",
+      "importance": 0.0573
+    },
+    {
+      "feature": "DailyRate",
+      "importance": 0.0547
+    },
+    {
+      "feature": "MonthlyRate",
+      "importance": 0.0536
+    },
+    {
+      "feature": "TotalWorkingYears",
+      "importance": 0.0518
+    },
+    {
+      "feature": "HourlyRate",
+      "importance": 0.0498
+    },
+    {
+      "feature": "Age",
+      "importance": 0.0478
+    },
+    {
+      "feature": "DistanceFromHome",
+      "importance": 0.0471
+    },
+    {
+      "feature": "YearsInCurrentRole",
+      "importance": 0.0396
+    }
+  ],
+  "attrition_rate": 16.5,
+  "dataset_size": 1500
+}
