@@ -75,11 +75,19 @@ The frontend is a **single-page application** rendered directly through Flask te
 ## Deployment
 The system runs on a local Flask server:
 
-```bash
-python app.py
-```
 
-### WEb UI
+
+### 🚀 How to Run
+
+```bash
+
+bashpip install -r requirements.txt
+python app.py          # Auto-trains if models missing
+
+```
+# → http://localhost:5000
+
+### Web UI
 
 <img src="https://github.com/software-shoaib/AttritionIQ/blob/main/1.png">
 <img src="https://github.com/software-shoaib/AttritionIQ/blob/main/2.png">
