@@ -72,11 +72,8 @@ The frontend is a **single-page application** rendered directly through Flask te
 
 ---
 
-## Deployment
+
 The system runs on a local Flask server:
-
-
-
 # 🚀 How to Run
 
 ```bash
