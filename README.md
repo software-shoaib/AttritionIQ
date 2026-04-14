@@ -1,115 +1,88 @@
-# AttritionIQ — Employee Attrition Prediction System
+# Employee Attrition Prediction System 🚀
 
-## Tech Stack & Rationale
+## Project Discussion
 
-| Component | Tech | Why |
-|-----------|------|-----|
-| Language | Python 3.10+ | Dominant in ML/data science; rich ecosystem |
-| ML Models | Random Forest + SVM | Complementary strengths (see below) |
-| API/Server | Flask | Lightweight REST API; easy pickle model integration |
-| Frontend | HTML/CSS/JS | No build step; runs directly from Flask templates |
-| Serialization | Pickle | Standard for scikit-learn model persistence |
-
-## Why Random Forest?
-- Handles mixed categorical + numerical data natively
-- Provides feature importance scores → explainable HR insights
-- Robust to outliers/noise common in HR surveys
-- Ensemble of 200 decision trees → low variance predictions
-- No need for feature scaling
-
-## Why SVM?
-- Excels at finding optimal decision boundary with max margin
-- RBF kernel captures non-linear attrition patterns
-- Works well on moderate-sized datasets (< 100k rows)
-- Complements Random Forest via soft-voting ensemble
-- Probability calibration via Platt scaling (probability=True)
-
-## Why Ensemble (Voting)?
-- RF weight: 0.6 | SVM weight: 0.4
-- Combines diverse models → reduces error
-- Soft voting averages probabilities → smoother risk scores
+## Overview
+The system predicts whether an employee is likely to leave an organization using machine learning. It is deployed as a local web application, enabling users to interact with the model through a simple interface.
 
 ---
 
-## Setup Instructions
+## Models Used
+Two complementary machine learning algorithms were implemented:
 
-### 1. Install dependencies
-```bash
-pip install -r requirements.txt
-```
+- **Random Forest**
+  - Handles mixed HR data (categorical + numerical)
+  - Provides feature importance scores
+  - Uses an ensemble of 200 decision trees for stable predictions
 
-### 2. Train models (auto-runs on first server start)
-```bash
-python train_models.py
-```
+- **Support Vector Machine (SVM - RBF Kernel)**
+  - Finds optimal decision boundaries in moderate-sized datasets
+  - Captures non-linear attrition patterns effectively
 
-### 3. Start Flask server
+### Ensemble Approach
+Both models are combined into a **soft-voting ensemble**:
+- Random Forest → 60% weight  
+- SVM → 40% weight  
+
+This ensures maximum reliability and improved prediction performance.
+
+---
+
+## Tech Stack
+- **Python** – Core programming language  
+- **Scikit-learn** – Model training and preprocessing  
+- **Pickle** – Model serialization  
+- **Flask** – Lightweight REST API backend (5 endpoints)  
+- **HTML / CSS / JavaScript** – Frontend dashboard  
+
+The frontend is a **single-page application** rendered directly through Flask templates, with no separate build step required.
+
+---
+
+## Key Features
+- **Single Employee Prediction**
+  - Instant risk scoring: High / Medium / Low  
+
+- **Batch Prediction**
+  - Upload CSV files to analyze entire workforces  
+
+- **Feature Importance Visualization**
+  - Displays top 10 attrition drivers  
+
+- **Model Metrics Dashboard**
+  - Shows Accuracy and AUC-ROC for all models  
+
+---
+
+## Results Achieved
+- Dataset: Synthetic IBM-style HR dataset  
+- Total Records: 1,500  
+- Attrition Rate: 16.5%  
+
+### Performance
+- Accuracy: **83.67%**  
+- AUC-ROC: **0.667**
+
+### Top Predictors
+- Monthly Income  
+- Overtime  
+- Years at Company  
+- Age  
+- Distance from Home  
+
+---
+
+## Deployment
+The system runs on a local Flask server:
+
 ```bash
 python app.py
-```
 
-### 4. Open browser
-```
-http://localhost:5000
-```
 
----
+## WEb UI
 
-## Project Structure
-```
-attrition_system/
-├── app.py              # Flask API server
-├── train_models.py     # Training pipeline (RF + SVM + Ensemble)
-├── requirements.txt
-├── models/             # Saved .pkl files + meta.json (auto-generated)
-├── data/               # HR dataset CSV (auto-generated)
-└── templates/
-    └── index.html      # Web dashboard
-```
-
----
-
-## API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET  | `/` | Dashboard UI |
-| POST | `/predict` | Single employee prediction (JSON) |
-| POST | `/batch_predict` | CSV batch upload → downloadable results |
-| GET  | `/model_metrics` | Accuracy + AUC-ROC for all models |
-| GET  | `/feature_importance` | Top 10 RF feature importances |
-| GET  | `/health` | Server health check |
-
-### Sample `/predict` Request
-```json
-{
-  "Age": 28,
-  "MonthlyIncome": 3500,
-  "OverTime": "Yes",
-  "JobSatisfaction": 2,
-  "WorkLifeBalance": 1,
-  "BusinessTravel": "Travel_Frequently",
-  "YearsAtCompany": 2,
-  "Department": "Sales",
-  "model_choice": "ensemble"
-}
-```
-
-### Sample Response
-```json
-{
-  "prediction": "Yes",
-  "attrition_prob": 74.3,
-  "risk_level": "High",
-  "model_used": "ensemble"
-}
-```
-
----
-
-## Risk Levels
-| Risk | Probability | Action |
-|------|-------------|--------|
-| 🔴 High | ≥ 65% | Immediate retention intervention |
-| 🟡 Medium | 35–64% | Monitor + engagement programs |
-| 🟢 Low | < 35% | Standard HR touchpoints |
+![Dashboard Screenshot](1.png)
+![Dashboard Screenshot](2.png)
+![Dashboard Screenshot](3.png)
+![Dashboard Screenshot](4.png)
+![Dashboard Screenshot](5.png)
