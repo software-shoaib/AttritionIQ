@@ -81,8 +81,8 @@ python app.py
 
 ### WEb UI
 
-<img src="images/screenshot.png">
-![Dashboard Screenshot](2.png)
-![Dashboard Screenshot](3.png)
-![Dashboard Screenshot](4.png)
-![Dashboard Screenshot](5.png)
+<img src="https://github.com/software-shoaib/AttritionIQ/blob/main/1.png">
+<img src="https://github.com/software-shoaib/AttritionIQ/blob/main/2.png">
+<img src="https://github.com/software-shoaib/AttritionIQ/blob/main/3.png">
+<img src="https://github.com/software-shoaib/AttritionIQ/blob/main/4.png">
+<img src="https://github.com/software-shoaib/AttritionIQ/blob/main/5.png">
