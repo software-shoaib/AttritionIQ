@@ -77,11 +77,11 @@ The system runs on a local Flask server:
 
 ```bash
 python app.py
+```
 
+### WEb UI
 
-## WEb UI
-
-![Dashboard Screenshot](1.png)
+<img src="images/screenshot.png">
 ![Dashboard Screenshot](2.png)
 ![Dashboard Screenshot](3.png)
 ![Dashboard Screenshot](4.png)
