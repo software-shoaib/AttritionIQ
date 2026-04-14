@@ -78,7 +78,9 @@ The system runs on a local Flask server:
 
 ```bash
 
-bashpip install -r requirements.txt
+bash
+
+pip install -r requirements.txt
 python app.py          # Auto-trains if models missing
 
 ```
