@@ -77,7 +77,7 @@ The system runs on a local Flask server:
 
 
 
-### 🚀 How to Run
+# 🚀 How to Run
 
 ```bash
 
@@ -85,7 +85,7 @@ bashpip install -r requirements.txt
 python app.py          # Auto-trains if models missing
 
 ```
-# → http://localhost:5000
+### → http://localhost:5000
 
 ### Web UI
 
